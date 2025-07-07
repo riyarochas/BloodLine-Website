@@ -11,10 +11,6 @@ Blood Line is a web application that simplifies and streamlines the blood donati
 - Donor Profile Creation
 - Search Donors by Blood Type and City
 
-## Screenshots
-![Home Page](link-to-image)
-![Search Donors](link-to-image)
-
 ## How to Run Locally
 1. Clone this repo
 2. Open in VS Code or any IDE
