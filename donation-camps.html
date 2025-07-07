@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Donation Camps - BloodLine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom, rgba(255, 230, 230, 0.85), rgba(255, 255, 255, 0.9)),
+                  url('image.jpeg') no-repeat center center;
+      background-size: cover;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background-color: #fff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #c62828;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .btn-search {
+      background-color: #c62828;
+      color: white;
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-search:hover {
+      background-color: #b71c1c;
+    }
+
+    .result {
+      margin-top: 30px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      color: #333;
+    }
+
+    .result ul {
+      padding-left: 20px;
+    }
+
+    .result li {
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏥 Search Nearby Blood Donation Locations</h1>
+    <form id="campForm">
+      <div class="form-group">
+        <label for="campCity">Enter Your City:</label>
+        <input type="text" id="campCity" required />
+      </div>
+      <button type="submit" class="btn-search">Search</button>
+    </form>
+
+    <div id="campResults" class="result"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCmqaVqnU6g0HpvOkTrmnNYyzZjvLI6TNQ",
+      authDomain: "blood-line-75626.firebaseapp.com",
+      databaseURL: "https://blood-line-75626-default-rtdb.firebaseio.com/",
+      projectId: "blood-line-75626",
+      storageBucket: "blood-line-75626.appspot.com",
+      messagingSenderId: "234449502872",
+      appId: "1:234449502872:web:452509dbb093e040ff46ed",
+      measurementId: "G-HC9NW9NBMQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.getElementById("campForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const cityInput = document.getElementById("campCity").value.trim().toLowerCase();
+      const resultDiv = document.getElementById("campResults");
+      resultDiv.innerHTML = "<p>Searching for locations...</p>";
+
+      try {
+        const snapshot = await get(child(ref(db), "donors"));
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          let found = false;
+          let output = "<h3>Donation Locations in Your City:</h3><ul>";
+
+          Object.values(data).forEach((camp) => {
+            const campCity = camp.City?.toLowerCase();
+            if (campCity === cityInput) {
+              found = true;
+              output += `
+                <li>
+                  <strong>Blood Bank:</strong> ${camp.BloodBank}<br>
+                  <strong>Address:</strong> ${camp.Address}<br>
+                  <strong>Pincode:</strong> ${camp.Pincode}<br>
+                </li>
+              `;
+            }
+          });
+
+          output += "</ul>";
+          resultDiv.innerHTML = found ? output : "<p>No locations found in your city.</p>";
+        } else {
+          resultDiv.innerHTML = "<p>No camp data found.</p>";
+        }
+      } catch (error) {
+        console.error(error);
+        resultDiv.innerHTML = "<p>Error retrieving data.</p>";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Become a Donor - BloodLine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+     font-family: 'Roboto', sans-serif;
+      background: linear-gradient(rgba(223, 148, 148, 0.85), rgba(255,255,255,0.9)), url('image.jpeg') no-repeat center center;
+      background-size: cover;
+      background-attachment: fixed;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      background-color: white;
+      margin: 40px auto;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #c62828;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin: 15px 0;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #444;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-left: 5px;
+    }
+
+    .btn-check, .btn-download {
+      display: inline-block;
+      background-color: #d32f2f;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 15px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-check:hover, .btn-download:hover {
+      background-color: #b71c1c;
+    }
+
+    .result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+      color: #333;
+    }
+
+    #downloadBtn {
+      display: none;
+    }
+
+    img.header-img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 25px;
+    }
+
+    /* Popup */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4); /* Black with transparency */
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+    }
+
+    #closeCertificateBtn {
+      background-color: #388e3c;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #closeCertificateBtn:hover {
+      background-color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img class="header-img" src="image.jpeg" length="50" width="50" alt="Blood Donation Banner">
+    <h1>🩸 Become a Donor</h1>
+    <form id="eligibilityForm">
+      <div class="form-group">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" required>
+      </div>
+      <div class="form-group">
+        <label for="age">Age (must be between 18–65):</label>
+        <input type="number" id="age" required>
+      </div>
+      <div class="form-group">
+        <label for="weight">Weight in kg (minimum 50kg):</label>
+        <input type="number" id="weight" required>
+      </div>
+      <div class="form-group">
+        <label for="height">Height in cm (minimum 145cm):</label>
+        <input type="number" id="height" required>
+      </div>
+      <div class="form-group">
+        <label>Have you donated blood in the last 3 months?</label>
+        <select id="recentDonation" required>
+          <option value="">Select</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Do you have any of the following?</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="tattoo"> Tattoo in last 6 months</label>
+          <label><input type="checkbox" id="piercing"> Piercing in last 6 months</label>
+          <label><input type="checkbox" id="medication"> On medication</label>
+        </div>
+      </div>
+      <button type="button" class="btn-check" onclick="checkEligibility()">Check Eligibility</button>
+    </form>
+
+    <div class="result" id="resultMsg"></div>
+    <button id="downloadBtn" class="btn-download" onclick="downloadPDF()">Download as PDF</button>
+  </div>
+
+  <!-- Modal for Donor Certificate -->
+  <div id="certificateModal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <h2>Certified Donor</h2>
+      <p id="donorName"></p>
+      <p id="certificationDate"></p>
+      <p>Thank you for your selfless act of saving lives!</p>
+      <button id="closeCertificateBtn">Close</button>
+    </div>
+  </div>
+
+  <script>
+    let isEligible = false;
+
+    function checkEligibility() {
+      const name = document.getElementById('name').value.trim();
+      const age = parseInt(document.getElementById('age').value);
+      const weight = parseFloat(document.getElementById('weight').value);
+      const height = parseFloat(document.getElementById('height').value);
+      const recentDonation = document.getElementById('recentDonation').value;
+      const tattoo = document.getElementById('tattoo').checked;
+      const piercing = document.getElementById('piercing').checked;
+      const medication = document.getElementById('medication').checked;
+
+      let message = "";
+      isEligible = false;
+
+      if (!name || isNaN(age) || isNaN(weight) || isNaN(height) || !recentDonation) {
+        alert("Please fill in all fields correctly.");
+        return;
+      }
+
+      if (age < 18 || age > 65) {
+        message = "❌ You are not eligible: Age should be between 18 and 65.";
+      } else if (weight < 50) {
+        message = "❌ You are not eligible: Weight must be at least 50 kg.";
+      } else if (height < 145) {
+        message = "❌ You are not eligible: Height must be at least 145 cm.";
+      } else if (recentDonation === "yes") {
+        message = "❌ You are not eligible: Wait at least 3 months after last donation.";
+      } else if (tattoo || piercing || medication) {
+        message = "❌ You are not eligible: Health conditions prevent donation at this time.";
+      } else {
+        message = "✅ You are eligible to donate blood. Thank you!";
+        isEligible = true;
+        document.getElementById("downloadBtn").style.display = "inline-block";
+      }
+
+      document.getElementById("resultMsg").innerText = message;
+
+      if (isEligible) {
+        // Show the Certificate Modal
+        showCertificateModal(name);
+      }
+    }
+
+    function showCertificateModal(name) {
+      const modal = document.getElementById("certificateModal");
+      const donorName = document.getElementById("donorName");
+      const certificationDate = document.getElementById("certificationDate");
+
+      const currentDate = new Date().toLocaleDateString();
+
+      donorName.innerText = `Name: ${name}`;
+      certificationDate.innerText = `Certification Date: ${currentDate}`;
+
+      modal.style.display = "block";
+    }
+
+    // Close the modal
+    document.getElementById("closeModal").onclick = function() {
+      document.getElementById("certificateModal").style.display = "none";
+    }
+
+    document.getElementById("closeCertificateBtn").onclick = function() {
+      document.getElementById("certificateModal").style.display = "none";
+    }
+    
+    //pdf download
+function downloadPDF() {
+  if (!isEligible) return;
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const name = document.getElementById('name').value;
+  const age = document.getElementById('age').value;
+  const weight = document.getElementById('weight').value;
+  const height = document.getElementById('height').value;
+  const currentDate = new Date().toLocaleDateString();
+
+  // Header
+  doc.setFontSize(18);
+  doc.setTextColor(200, 0, 0);
+  doc.text("Blood Donation Eligibility Form", 20, 20);
+
+  // Personal Info
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text(`Name: ${name}`, 20, 40);
+  doc.text(`Age: ${age}`, 20, 50);
+  doc.text(`Weight: ${weight} kg`, 20, 60);
+  doc.text(`Height: ${height} cm`, 20, 70);
+  doc.text("Status: Eligible to Donate", 20, 80);
+
+  // Eligibility Criteria
+  doc.setFontSize(14);
+  doc.setTextColor(100, 0, 0);
+  doc.text("Eligibility Criteria Summary:", 20, 100);
+
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text("- Age between 18 and 65 years", 25, 110);
+  doc.text("- Weight of at least 50 kg", 25, 120);
+  doc.text("- Height of at least 145 cm", 25, 130);
+  doc.text("- No recent tattoos, piercings, or medications", 25, 140);
+  doc.text("- No donation in the last 3 months", 25, 150);
+
+  // Declaration
+  doc.setFontSize(14);
+  doc.setTextColor(100, 0, 0);
+  doc.text("Declaration:", 20, 170);
+
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text("I confirm that I meet all the eligibility criteria stated above and", 25, 180);
+  doc.text("voluntarily agree to donate blood to help those in need.", 25, 188);
+
+  // Date & Signature Area
+  doc.text(`Certification Date: ${currentDate}`, 20, 210);
+  doc.text("Signature: _________________________", 20, 220);
+
+  // Footer
+  doc.setFontSize(10);
+  doc.setTextColor(150);
+  doc.text("Generated by BloodLine - Your trusted blood donation platform", 20, 280);
+
+  // Save the file
+  doc.save("eligibility_form.pdf");
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #fff3f3;
+  color: #333;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+}
+
+header h1 {
+  color: #c62828;
+  margin-bottom: 10px;
+}
+
+.button-group {
+  margin: 30px 0;
+}
+
+.btn {
+  background-color: #d32f2f;
+  color: white;
+  padding: 15px 25px;
+  margin: 10px;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background-color: #b71c1c;
+}
+
+.awareness, .helpline {
+  background: #fff;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.awareness h2, .helpline h2 {
+  color: #c62828;
+}
