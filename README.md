@@ -6,6 +6,9 @@ Blood Line is a web application that simplifies and streamlines the blood donati
 - HTML, CSS, JavaScript
 - Firebase (Authentication, Firestore)
 
+## View on Notion
+ https://www.notion.so/BloodLine-Website-229f634d3e7b804a9152f2baf000e1b9?source=copy_link
+ 
 ## Features
 - User Registration & Login
 - Donor Profile Creation
